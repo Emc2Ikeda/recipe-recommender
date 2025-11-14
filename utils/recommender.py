@@ -53,11 +53,11 @@ def filter_recipes(df, excluded_ingredients):
        1. recipes (list of dict): Recipe dataset filtered by excluded ingredients
        2. included_ingredients (list of str): Ingredients the user wants to include
     Returns:
-       List of dict: Top 5 recipe dictionaries ranked by similarity to the included ingredients.
+       DataFrame: Top 5 recipes ranked by similarity to the included ingredients.
 """
-def recommend_recipe(recipes, included_ingredients):
-  texts = [' '.join(r['ingredients']) for r in recipes]
-
+def recommend_recipe(df, included_ingredients):
+  # Convert list of ingredients to a single string for each recipe
+  texts = [' '.join(ingr) for ingr in df['ingredients_clean']]
   vectorizer = CountVectorizer()
   recipe_vectors = vectorizer.fit_transform(texts)
 
@@ -65,5 +65,10 @@ def recommend_recipe(recipes, included_ingredients):
   user_vector = vectorizer.transform([user_query])
 
   similarities = cosine_similarity(user_vector, recipe_vectors).flatten()
-  ranked = sorted(zip(recipes, similarities), key=lambda x:x[1], reverse=True)
-  return ranked[:5]
+
+  # Add similarity scores to DataFrame
+  df = df.copy()
+  df['similarity'] = similarities
+
+  # Return top 5 recipes
+  return df.sort_values('similarity', ascending=False).head(5)

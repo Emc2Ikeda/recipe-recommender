@@ -1,6 +1,6 @@
 import streamlit as st
 from utils.data import load_and_preprocess_data
-from utils.recommender import filter_recipes, get_excluded_ingredients
+from utils.recommender import filter_recipes, get_excluded_ingredients, recommend_recipe
 
 st.title("Recipe Recommender")
 
@@ -27,5 +27,6 @@ st.write(f"Ingredients to exclude (including dietary restrictions): {sorted(excl
 
 filtered_recipes = filter_recipes(df, excluded_ingredients)
 st.write(filtered_recipes.head())
-# # top_5_recipes = recommend_recipe(filter_recipes(df['ingredients_clean'], excluded_ingredients), included_ingredients)
-# # print(top_5_recipes)
+
+top_5_recipes = recommend_recipe(filter_recipes(df, excluded_ingredients), included_ingredients)
+st.write(top_5_recipes.head())
