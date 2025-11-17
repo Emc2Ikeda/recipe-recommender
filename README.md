@@ -1,4 +1,4 @@
-# RecipeRecommender
+# Recipe Recommender
 A Streamlit application that suggests recipes based on the ingredients and dietary restrictions.
 
 ## Features 
@@ -25,8 +25,7 @@ A Streamlit application that suggests recipes based on the ingredients and dieta
 - The app will suggest recipes with tofu and rice, but skip recipes that contain any soy-based ingredients.
 
 ## Dataset
-- Uses Better Recipe Dataset on Kaggle: 
-    - URL: https://www.kaggle.com/datasets/thedevastator/better-recipes-for-a-better-life
+- Uses Better Recipe Dataset on Kaggle: https://www.kaggle.com/datasets/thedevastator/better-recipes-for-a-better-life
 
 ## Requirements / Setup
 Install dependencies using the following command: 
