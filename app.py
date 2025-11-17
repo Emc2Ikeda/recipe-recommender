@@ -33,9 +33,9 @@ else:
 
 top_5_recipes = recommend_recipe(filter_recipes(df, excluded_ingredients), included_ingredients)
 st.write("Top 5 Recipes: ")
-st.write(top_5_recipes.head())
+# st.write(top_5_recipes.head())
 
-st.write("Trimmed Recipes for Download: ")
+# st.write("Trimmed Recipes for Download: ")
 trimmed_recipes = trim_recipe_df(top_5_recipes)
 st.write(trimmed_recipes.head())
 
