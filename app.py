@@ -6,7 +6,7 @@ st.title("Recipe Recommender")
 
 # load preprocessed data
 df = load_and_preprocess_data()
-st.write(df.head(5))
+st.write("Recipe dataset loaded.")
 
 # Prompt the user to enter several ingredients and dietary restrictions. Conver this to individual ingredients to exclude in the recipe.
 ingredients_input = st.text_input("Enter the ingredients (comma separated): ")
@@ -20,13 +20,19 @@ selected_diets = [] # ingredients excluded under known dietary restrictions
 for token in excluded_tokens:
   selected_diets.append(token)
 
+# List of all the ingredients to exclude
 excluded_ingredients = get_excluded_ingredients(selected_diets)
 
 st.write(f"\nIngredients to include: {included_ingredients}")
 st.write(f"Ingredients to exclude (including dietary restrictions): {sorted(excluded_ingredients)}")
 
-filtered_recipes = filter_recipes(df, excluded_ingredients)
-st.write(filtered_recipes.head())
+if excluded_ingredients:
+  filtered_recipes = filter_recipes(df, excluded_ingredients)
+else:
+  filtered_recipes = df
 
 top_5_recipes = recommend_recipe(filter_recipes(df, excluded_ingredients), included_ingredients)
 st.write(top_5_recipes.head())
+
+# TODO: widget needs 'data' argument to work
+# st.download_button(label="Download Recipes", file_name="recipes.txt")
