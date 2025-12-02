@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 import re
+import io
 
 # #Data set
 # URL: https://www.kaggle.com/datasets/thedevastator/better-recipes-for-a-better-life \\
@@ -47,3 +48,8 @@ def load_and_preprocess_data():
     df = delete_duplicate(df)
     add_ingredients_clean(df)
     return df
+
+# Convert Dataframe from recommend_recipe() to downloadable txt file
+def save_recipes(df):
+    text_data = df.to_string(index=False)
+    return text_data

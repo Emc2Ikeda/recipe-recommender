@@ -1,5 +1,5 @@
 import streamlit as st
-from utils.data import load_and_preprocess_data
+from utils.data import load_and_preprocess_data, save_recipes
 from utils.recommender import filter_recipes, get_excluded_ingredients, recommend_recipe
 
 st.title("Recipe Recommender")
@@ -34,5 +34,5 @@ else:
 top_5_recipes = recommend_recipe(filter_recipes(df, excluded_ingredients), included_ingredients)
 st.write(top_5_recipes.head())
 
-# TODO: widget needs 'data' argument to work
-# st.download_button(label="Download Recipes", file_name="recipes.txt")
+text_file = save_recipes(top_5_recipes)
+st.download_button(data=text_file, label="Download Recipes", file_name="recipes.txt")
