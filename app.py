@@ -1,5 +1,6 @@
 import streamlit as st
-from utils.data import load_and_preprocess_data, save_recipes
+# from utils.data import load_and_preprocess_data, save_recipes, trim_recipe_df, format_recipe_for_download
+from utils.data import load_and_preprocess_data, trim_recipe_df, format_recipe_for_download
 from utils.recommender import filter_recipes, get_excluded_ingredients, recommend_recipe
 
 st.title("Recipe Recommender")
@@ -32,7 +33,12 @@ else:
   filtered_recipes = df
 
 top_5_recipes = recommend_recipe(filter_recipes(df, excluded_ingredients), included_ingredients)
+st.write("Top 5 Recipes: ")
 st.write(top_5_recipes.head())
 
-text_file = save_recipes(top_5_recipes)
+st.write("Trimmed Recipes for Download: ")
+trimmed_recipes = trim_recipe_df(top_5_recipes)
+st.write(trimmed_recipes.head())
+
+text_file = format_recipe_for_download(trimmed_recipes)
 st.download_button(data=text_file, label="Download Recipes", file_name="recipes.txt")

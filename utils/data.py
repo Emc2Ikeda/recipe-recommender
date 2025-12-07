@@ -49,7 +49,42 @@ def load_and_preprocess_data():
     add_ingredients_clean(df)
     return df
 
+# Prepare DataFrame for download. Returns a text file with only the user-relevant columns.
+def trim_recipe_df(df):
+    keep_cols = [
+        "recipe_name",
+        "rating",
+        "prep_time",
+        "cook_time",
+        "total_time",
+        "servings",
+        "url"
+    ]
+    return df[keep_cols].copy()
+
+# Formats recipe DataFrame for download as text file in user-friendly format    
+def format_recipe_for_download(df):
+    lines = []
+    for _, row in df.iterrows():
+        block = f"""        
+        Recipe Name: {row['recipe_name']}
+        Rating: {row.get('rating', 'N/A')}
+        Prep Time: {row.get('prep_time', 'N/A')}
+        Cook Time: {row.get('cook_time', 'N/A')}
+        Total Time: {row.get('total_time', 'N/A')}
+        Servings: {row.get('servings', 'N/A')}
+        URL: {row.get('url', 'N/A')}
+        -------------------------------------------------
+        """
+        lines.append(block.strip())
+    return "\n\n".join(lines)
+
+def prep_downloadable_text(df):
+    pass
+    # return format_recipe_for_download(df)
+
 # Convert Dataframe from recommend_recipe() to downloadable txt file
 def save_recipes(df):
-    text_data = df.to_string(index=False)
-    return text_data
+    # text_data = df.to_string(index=False)
+    # return text_data
+    pass
