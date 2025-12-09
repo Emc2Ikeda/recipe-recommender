@@ -1,5 +1,4 @@
 import streamlit as st
-# from utils.data import load_and_preprocess_data, save_recipes, trim_recipe_df, format_recipe_for_download
 from utils.data import load_and_preprocess_data, trim_recipe_df, format_recipe_for_download
 from utils.recommender import filter_recipes, get_excluded_ingredients, recommend_recipe
 

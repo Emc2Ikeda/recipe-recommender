@@ -1,9 +1,6 @@
 # Preprocesses data for recipe recommender
-
-import numpy as np
 import pandas as pd
 import re
-import io
 
 # #Data set
 # URL: https://www.kaggle.com/datasets/thedevastator/better-recipes-for-a-better-life \\
