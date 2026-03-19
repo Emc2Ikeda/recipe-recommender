@@ -20,3 +20,5 @@ DIETARY_RESTRICTIONS = {
     "nut_free": ['nuts'],
     "dairy_free": ['dairy']
 }
+
+CULINARY_STOPWORDS = ['salt', 'pepper', 'water', 'oil', 'olive oil', 'vegetable oil', 'canola oil', 'sugar', 'chopped', 'diced', 'sliced', 'minced', 'fresh', 'grated', 'shredded', 'crushed', 'large', 'small', 'medium']
