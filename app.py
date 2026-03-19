@@ -31,13 +31,17 @@ if excluded_ingredients:
 else:
   filtered_recipes = df
 
-top_5_recipes = recommend_recipe(filter_recipes(df, excluded_ingredients), included_ingredients)
-st.write("Top 5 Recipes: ")
-# st.write(top_5_recipes.head())
+# checkbox to include all ingredients in the recipe recommendations
+include_all_ingredients = st.checkbox("Include all ingredients in the recipe recommendations")
 
-# st.write("Trimmed Recipes for Download: ")
-trimmed_recipes = trim_recipe_df(top_5_recipes)
-st.write(trimmed_recipes.head())
+if st.button("Get Recipe Recommendations"):
+  top_5_recipes = recommend_recipe(filter_recipes(df, excluded_ingredients), included_ingredients, require_all_ingredients=include_all_ingredients)
+  st.write("Top 5 Recipes: ")
+  # st.write(top_5_recipes.head())
 
-text_file = format_recipe_for_download(trimmed_recipes)
-st.download_button(data=text_file, label="Download Recipes", file_name="recipes.txt")
+  # st.write("Trimmed Recipes for Download: ")
+  trimmed_recipes = trim_recipe_df(top_5_recipes)
+  st.write(trimmed_recipes.head())
+
+  text_file = format_recipe_for_download(trimmed_recipes)
+  st.download_button(data=text_file, label="Download Recipes", file_name="recipes.txt")

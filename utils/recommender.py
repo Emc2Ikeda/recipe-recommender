@@ -50,12 +50,13 @@ def filter_recipes(df, excluded_ingredients):
     Uses bag-of-words model with cosine similarity to match the user's desired ingredients against the ingredient list of recipes.
 
     Args:
-       1. recipes (list of dict): Recipe dataset filtered by excluded ingredients
+       1. df (list of dict): Recipe dataset filtered by excluded ingredients
        2. included_ingredients (list of str): Ingredients the user wants to include
+       3. require_all_ingredients (bool): If True, only recommend recipes that contain ALL included ingredients. If False, recommend based on similarity score regardless of whether all included ingredients are present.
     Returns:
        DataFrame: Top 5 recipes ranked by similarity to the included ingredients.
 """
-def recommend_recipe(df, included_ingredients):
+def recommend_recipe(df, included_ingredients, require_all_ingredients=False):
   # Convert list of ingredients to a single string for each recipe
   texts = [' '.join(ingr) for ingr in df['ingredients_clean']]
   vectorizer = CountVectorizer()
@@ -65,10 +66,17 @@ def recommend_recipe(df, included_ingredients):
   user_vector = vectorizer.transform([user_query])
 
   similarities = cosine_similarity(user_vector, recipe_vectors).flatten()
-
   # Add similarity scores to DataFrame
   df = df.copy()
   df['similarity'] = similarities
+
+  if require_all_ingredients:
+    # Helper function to check if a recipe contains all included ingredients. Used when require_all_ingredients is True.
+    def contains_all(ing_list):
+      ing_lower = [i.lower() for i in ing_list]
+      return all(ing.lower() in ing_lower for ing in included_ingredients)
+    
+    df = df[df['ingredients_clean'].apply(contains_all)]
 
   # Return top 5 recipes
   return df.sort_values('similarity', ascending=False).head(5)
