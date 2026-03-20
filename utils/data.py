@@ -1,6 +1,7 @@
 # Preprocesses data for recipe recommender
 import pandas as pd
 import re
+from utils.constants import CULINARY_STOPWORDS, DESCRIPTORS
 
 # #Data set
 # URL: https://www.kaggle.com/datasets/thedevastator/better-recipes-for-a-better-life \\
@@ -35,6 +36,11 @@ def add_ingredients_clean(df):
         ingredients = row.lower()
         ingredients = re.sub(r'[^\w\s,]','',ingredients).split(',')
         ingredients = [item.strip() for item in ingredients if item.strip()]
+
+        # Remove descriptors in ingredients list
+        ingredients = [remove_descriptors(item) for item in ingredients]
+        ingredients = [item for item in ingredients if not any(stopword in item for stopword in CULINARY_STOPWORDS)]
+        
         cleaned_ingredients.append(ingredients)
 
     df['ingredients_clean'] = cleaned_ingredients
@@ -45,6 +51,12 @@ def load_and_preprocess_data():
     df = delete_duplicate(df)
     add_ingredients_clean(df)
     return df
+
+# Remove descriptors from a string of ingredients. Used for bag-of-words vectorization in recommend_recipe() function.
+def remove_descriptors(item):
+    for word in DESCRIPTORS:
+        item = item.replace(word, '')
+        return item.strip()
 
 # Prepare DataFrame for download. Returns a text file with only the user-relevant columns.
 def trim_recipe_df(df):
