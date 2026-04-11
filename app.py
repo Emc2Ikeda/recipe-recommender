@@ -1,8 +1,13 @@
 import streamlit as st
 from utils.data import load_and_preprocess_data, trim_recipe_df, format_recipe_for_download
-from utils.recommender import filter_recipes, get_excluded_ingredients, recommend_recipe
+from utils.recommender import filter_recipes, get_excluded_ingredients, tf_idf_recommend, recommend_recipe_embeddings, tf_idf_recommend
 
 st.title("Recipe Recommender")
+
+model_choice = st.radio(
+    "Choose ranking method",
+    ["TF-IDF", "Sentence Embeddings"]
+)
 
 # load preprocessed data
 df = load_and_preprocess_data()
@@ -35,13 +40,31 @@ else:
 require_all_ingredients = st.checkbox("Include all ingredients in the recipe recommendations")
 
 if st.button("Get Recipe Recommendations"):
-  top_5_recipes = recommend_recipe(filter_recipes(df, excluded_ingredients), included_ingredients, require_all_ingredients=include_all_ingredients)
-  st.write("Top 5 Recipes: ")
-  # st.write(top_5_recipes.head())
+  results = None
+  if model_choice == "Sentence Embeddings":
+    st.write("Using Sentence Embeddings for recommendation...")
+    results = recommend_recipe_embeddings(
+        filtered_recipes,
+        included_ingredients,
+        require_all_ingredients
+    )
+  else:
+    st.write("Using TF-IDF for recommendation...")
+    results = tf_idf_recommend(
+        filtered_recipes,
+        included_ingredients,
+        require_all_ingredients
+    )
 
+  st.write("Recommendations: ")
+  if results.empty or results is None:
+    st.write("No recipes found with the given criteria.")
+  else:
+    st.write(results.head())
+  
   # st.write("Trimmed Recipes for Download: ")
-  trimmed_recipes = trim_recipe_df(top_5_recipes)
-  st.write(trimmed_recipes.head())
+  # trimmed_recipes = trim_recipe_df(top_5_recipes)
+  # st.write(trimmed_recipes.head())
 
-  text_file = format_recipe_for_download(trimmed_recipes)
-  st.download_button(data=text_file, label="Download Recipes", file_name="recipes.txt")
+  # text_file = format_recipe_for_download(trimmed_recipes)
+  # st.download_button(data=text_file, label="Download Recipes", file_name="recipes.txt")

@@ -1,8 +1,16 @@
 # Core logic of the app. Covers filtering, recommending, and similarity scoring of the recipes
 
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from utils.constants import DIETARY_RESTRICTIONS, INGREDIENT_TRAITS
+from sentence_transformers import SentenceTransformer
+import streamlit as st
+import numpy as np
+
+@st.cache_resource 
+def load_model(): 
+    return SentenceTransformer('all-MiniLM-L6-v2')
 
 """
 Accepts a list of user-provided restrictions (e.g. 'vegan', 'dairy', 'soy')
@@ -79,4 +87,58 @@ def recommend_recipe(df, included_ingredients, require_all_ingredients=False):
     df = df[df['ingredients_clean'].apply(contains_all)]
 
   # Return top 5 recipes
+  return df.sort_values('similarity', ascending=False).head(5)
+
+# Recommend recipes usign Sentence Embeddings.
+def recommend_recipe_embeddings(df, included_ingredients, require_all_ingredients=False):
+    df = df.copy()
+    model = load_model()
+
+    # 1. Encode user query
+    user_text = ' '.join(included_ingredients)
+    user_embedding = model.encode([user_text])[0]
+
+    texts = [' '.join(ing) for ing in df['ingredients_clean']]
+    recipe_embeddings = model.encode(texts)
+
+    # 2. Compute cosine similarity between user query and all recipes
+    similarities = cosine_similarity(
+        [user_embedding],
+        recipe_embeddings
+    ).flatten()
+
+    df['similarity'] = similarities
+
+    # 3. Optional strict filtering
+    if require_all_ingredients:
+        def contains_all(ing_list):
+            ing_lower = [i.lower() for i in ing_list]
+            return all(ing.lower() in ing_lower for ing in included_ingredients)
+        
+        df = df[df['ingredients_clean'].apply(contains_all)]
+
+    # 4. Return top 5
+    return df.sort_values('similarity', ascending=False).head(5)
+
+def tf_idf_recommend(df, included_ingredients, require_all_ingredients=False):
+  texts = [' '.join(ingr) for ingr in df['ingredients_clean']]
+  vectorizer = TfidfVectorizer(ngram_range=(1,2))
+  recipe_vectors = vectorizer.fit_transform(texts)
+
+  user_query = ' '.join(included_ingredients)
+  user_vector = vectorizer.transform([user_query])
+
+  similarities = cosine_similarity(user_vector, recipe_vectors).flatten()
+  # Add similarity scores to DataFrame
+  df = df.copy()
+  df['similarity'] = similarities
+
+  if require_all_ingredients:
+    # Helper function to check if a recipe contains all included ingredients. Used when require_all_ingredients is True.
+    def contains_all(ing_list):
+      ing_lower = [i.lower() for i in ing_list]
+      return all(ing.lower() in ing_lower for ing in included_ingredients)
+    
+    df = df[df['ingredients_clean'].apply(contains_all)]
+
   return df.sort_values('similarity', ascending=False).head(5)
