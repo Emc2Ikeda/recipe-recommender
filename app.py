@@ -32,7 +32,7 @@ else:
   filtered_recipes = df
 
 # checkbox to include all ingredients in the recipe recommendations
-include_all_ingredients = st.checkbox("Include all ingredients in the recipe recommendations")
+require_all_ingredients = st.checkbox("Include all ingredients in the recipe recommendations")
 
 if st.button("Get Recipe Recommendations"):
   top_5_recipes = recommend_recipe(filter_recipes(df, excluded_ingredients), included_ingredients, require_all_ingredients=include_all_ingredients)
